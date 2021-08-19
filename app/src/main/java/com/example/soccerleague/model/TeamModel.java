@@ -1,7 +1,7 @@
 package com.example.soccerleague.model;
 
 public class TeamModel {
-    String badgeUrl, team, stadium, formedYear, description;
+    private String badgeUrl, team, stadium, formedYear, description;
 
     public TeamModel(String badgeUrl, String team, String stadium, String formedYear, String description) {
         this.badgeUrl = badgeUrl;

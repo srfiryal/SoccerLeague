@@ -43,10 +43,10 @@ public class LaLigaFragment extends Fragment {
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
-    final String baseURL = "https://www.thesportsdb.com/api/v1/json/1/search_all_teams.php?s=Soccer&c=Spain";
-    TeamAdapter adapter;
-    ArrayList<TeamModel> arrayList;
-    MainActivity mainActivity;
+    private final String BASE_URL = "https://www.thesportsdb.com/api/v1/json/1/search_all_teams.php?s=Soccer&c=Spain";
+    private TeamAdapter adapter;
+    private ArrayList<TeamModel> arrayList;
+    private MainActivity mainActivity;
 
     @Nullable
     @Override
@@ -78,7 +78,7 @@ public class LaLigaFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         arrayList = new ArrayList<>();
 
-        AndroidNetworking.get(baseURL)
+        AndroidNetworking.get(BASE_URL)
                 .build().getAsJSONObject(new JSONObjectRequestListener() {
             @Override
             public void onResponse(JSONObject response) {
