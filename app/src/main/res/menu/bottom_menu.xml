@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_premierLeague"
+        android:icon="@drawable/icon_premierleague"
+        android:title="Premier League"/>
+
+    <item
+        android:id="@+id/nav_laliga"
+        android:icon="@drawable/icon_laliga"
+        android:title="La Liga"/>
+
+</menu>
