@@ -37,7 +37,7 @@ public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.ListViewHolder
         mListener = listener;
     }
 
-    public TeamAdapter(Context mContext, ArrayList<TeamModel> dataList) {
+    public TeamAdapter(Context mContext, List<TeamModel> dataList) {
         this.mContext = mContext;
         this.dataList = dataList;
         dataListFull = new ArrayList<>(dataList);

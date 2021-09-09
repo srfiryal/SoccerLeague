@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.example.soccerleague.fragment.FavoritesFragment;
 import com.example.soccerleague.fragment.LaLigaFragment;
 import com.example.soccerleague.fragment.PremierLeagueFragment;
 import com.example.soccerleague.R;
@@ -14,6 +15,7 @@ import com.example.soccerleague.model.TeamModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.bottom_navigation)
     BottomNavigationView bottomNavigationView;
 
-    private ArrayList<TeamModel> premiereList, laLigaList;
+    private List<TeamModel> premiereList, laLigaList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
                         case R.id.nav_laliga:
                             selectedFragment = new LaLigaFragment();
                             break;
+                        case R.id.nav_favorite:
+                            selectedFragment = new FavoritesFragment();
+                            break;
                     }
 
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
@@ -57,19 +62,19 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
 
-    public void setPremiereList(ArrayList<TeamModel> list) {
+    public void setPremiereList(List<TeamModel> list) {
         premiereList = list;
     }
 
-    public ArrayList<TeamModel> getPremiereList() {
+    public List<TeamModel> getPremiereList() {
         return premiereList;
     }
 
-    public void setLaLigaList(ArrayList<TeamModel> list) {
+    public void setLaLigaList(List<TeamModel> list) {
          laLigaList = list;
     }
 
-    public ArrayList<TeamModel> getLaLigaList() {
+    public List<TeamModel> getLaLigaList() {
         return laLigaList;
     }
 }

@@ -1,14 +1,31 @@
 package com.example.soccerleague.model;
 
-public class TeamModel {
-    private String badgeUrl, team, stadium, formedYear, description;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-    public TeamModel(String badgeUrl, String team, String stadium, String formedYear, String description) {
+public class TeamModel extends RealmObject {
+    @PrimaryKey
+    private Integer id;
+    private String badgeUrl, team, stadium, formedYear, description;
+    private boolean isFavorite;
+
+    public TeamModel() {}
+
+    public TeamModel(String badgeUrl, String team, String stadium, String formedYear, String description, boolean isFavorite) {
         this.badgeUrl = badgeUrl;
         this.team = team;
         this.stadium = stadium;
         this.formedYear = formedYear;
         this.description = description;
+        this.isFavorite = isFavorite;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getBadgeUrl() {
@@ -49,5 +66,13 @@ public class TeamModel {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean getIsFavorite() {
+        return isFavorite;
+    }
+
+    public void setIsFavorite(boolean isFavorite) {
+        this.isFavorite = isFavorite;
     }
 }

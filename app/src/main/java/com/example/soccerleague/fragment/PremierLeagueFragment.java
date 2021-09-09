@@ -32,9 +32,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 public class PremierLeagueFragment extends Fragment {
 
@@ -43,10 +46,13 @@ public class PremierLeagueFragment extends Fragment {
     @BindView(R.id.progress_bar)
     ProgressBar progressBar;
 
+    private final int REQUEST_CODE = 101;
+
     private final String BASE_URL = "https://www.thesportsdb.com/api/v1/json/1/search_all_teams.php?l=English%20Premier%20League";
     private TeamAdapter adapter;
-    private ArrayList<TeamModel> arrayList;
+    private List<TeamModel> teamList;
     private MainActivity mainActivity;
+    private int listIndex;
 
     @Nullable
     @Override
@@ -68,15 +74,15 @@ public class PremierLeagueFragment extends Fragment {
         AndroidNetworking.initialize(getActivity());
 
         mainActivity = (MainActivity) getActivity();
-        arrayList = mainActivity.getPremiereList();
+        teamList = mainActivity.getPremiereList();
 
-        if (arrayList == null) addData();
+        if (teamList == null) addData();
         else setAdapter();
     }
 
     private void addData() {
         progressBar.setVisibility(View.VISIBLE);
-        arrayList = new ArrayList<>();
+        teamList = new ArrayList<>();
 
         AndroidNetworking.get(BASE_URL)
                 .build().getAsJSONObject(new JSONObjectRequestListener() {
@@ -92,10 +98,10 @@ public class PremierLeagueFragment extends Fragment {
                         String stadium = resultObj.getString("strStadium");
                         String formedYear = resultObj.getString("intFormedYear");
                         String description = resultObj.getString("strDescriptionEN");
-                        arrayList.add(new TeamModel(badge, team, stadium, formedYear, description));
+                        teamList.add(new TeamModel(badge, team, stadium, formedYear, description, false));
                     }
 
-                    mainActivity.setPremiereList(arrayList);
+                    mainActivity.setPremiereList(teamList);
 
                     setAdapter();
                     progressBar.setVisibility(View.INVISIBLE);
@@ -117,7 +123,7 @@ public class PremierLeagueFragment extends Fragment {
     private void setAdapter() {
         progressBar.setVisibility(View.INVISIBLE);
 
-        adapter = new TeamAdapter(getActivity(), arrayList);
+        adapter = new TeamAdapter(getActivity(), teamList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
@@ -125,31 +131,44 @@ public class PremierLeagueFragment extends Fragment {
         adapter.setOnItemClickListener(new TeamAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Intent intent = new Intent(getActivity(), DetailsActivity.class);
-                intent.putExtra("badgeUrl", arrayList.get(position).getBadgeUrl());
-                intent.putExtra("team", arrayList.get(position).getTeam());
-                intent.putExtra("stadium", arrayList.get(position).getStadium());
-                intent.putExtra("formedYear", arrayList.get(position).getFormedYear());
-                intent.putExtra("description", arrayList.get(position).getDescription());
+                listIndex = position;
 
-                startActivity(intent);
+                Intent intent = new Intent(getActivity(), DetailsActivity.class);
+                intent.putExtra("id", teamList.get(position).getId());
+                intent.putExtra("badgeUrl", teamList.get(position).getBadgeUrl());
+                intent.putExtra("team", teamList.get(position).getTeam());
+                intent.putExtra("stadium", teamList.get(position).getStadium());
+                intent.putExtra("formedYear", teamList.get(position).getFormedYear());
+                intent.putExtra("description", teamList.get(position).getDescription());
+                intent.putExtra("isFavorite", teamList.get(position).getIsFavorite());
+                intent.putExtra("isFromFavoriteFragment", false);
+
+                startActivityForResult(intent, REQUEST_CODE);
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE && resultCode == getActivity().RESULT_OK) {
+            teamList.get(listIndex).setId(data.getIntExtra("id", 1));
+            teamList.get(listIndex).setIsFavorite(data.getBooleanExtra("isFavorite", false));
+            listIndex = 0;
+        }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
+
         inflater.inflate(R.menu.search_menu, menu);
         MenuItem item = menu.findItem(R.id.btn_search);
+
         SearchView searchView = (SearchView) item.getActionView();
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-//        SearchView searchView = new SearchView(((MainActivity) getActivity()).getSupportActionBar().getThemedContext());
-//        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-//        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItem.SHOW_AS_ACTION_IF_ROOM);
-//        item.setActionView(searchView);
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
